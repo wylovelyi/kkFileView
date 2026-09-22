@@ -75,6 +75,17 @@ public class PdfViewerCompatibilityTests {
         assertTrue(properties.contains("office.preview.type = ${KK_OFFICE_PREVIEW_TYPE:pdf}"));
     }
 
+    @Test
+    void shouldEscapeFileUrlWithJsStringInPreviewTemplates() throws IOException {
+        // Regression test for #790: a single quote in the source file URL (e.g. a path
+        // segment like "Int'l") was interpolated raw into the inline `var url = '...'`
+        // assignment, terminating the JS string early and throwing Uncaught SyntaxError.
+        // FreeMarker's ?js_string built-in escapes it for the JS string literal context.
+        String pdfTemplate = readResource("/web/pdf.ftl");
+        assertTrue(pdfTemplate.contains("var url = '${finalUrl?js_string}';"),
+                () -> "pdf.ftl must JS-escape the file URL to avoid SyntaxError on apostrophe (see #790)");
+    }
+
     private String readResource(String resourcePath) throws IOException {
         try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
             assertNotNull(inputStream);
