@@ -274,7 +274,7 @@ public class FileHandlerService {
         boolean isHtmlView = suffix.equalsIgnoreCase("xls") || suffix.equalsIgnoreCase("xlsx") || suffix.equalsIgnoreCase("csv") || suffix.equalsIgnoreCase("xlsm") || suffix.equalsIgnoreCase("xlt") || suffix.equalsIgnoreCase("xltm") || suffix.equalsIgnoreCase("et") || suffix.equalsIgnoreCase("ett") || suffix.equalsIgnoreCase("xlam");
         // #791: 用完整源 URL 的短哈希为物理落地名加前缀，避免不同路径下同名文件互相覆盖（内容污染）
         String fileKey = KkFileUtils.urlCacheKey(url);
-        String physicalName = fileKey + "_" + originFileName; // 物理唯一名（展示名仍为原始 originFileName）
+        String physicalName = fileKey + "_" + originFileName; // 物理唯一名；getName 同步设为 physicalName，使下载/转换/引用三处路径一致
         String cacheFilePrefixName = null;
         try {
             cacheFilePrefixName = physicalName.substring(0, physicalName.lastIndexOf(".")) + suffix + "."; //这里统一文件名处理 下面更具类型 各自添加后缀
