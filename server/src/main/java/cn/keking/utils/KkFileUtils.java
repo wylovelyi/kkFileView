@@ -266,10 +266,10 @@ public class KkFileUtils {
     /**
      * 根据文件源 URL 生成稳定的短哈希，用于隔离不同路径下同名文件的物理缓存，
      * 避免转换产物被互相覆盖（kkFileView #791）。
-     * 取 MD5 前 8 位十六进制，结果不含路径分隔符，可直接拼入文件名。
+     * 取 MD5 前 12 位十六进制，结果不含路径分隔符，可直接拼入文件名。
      *
      * @param url 文件源 URL（与 getFileAttribute 中规范化后的 url 保持一致即可）
-     * @return 8 位十六进制短哈希；url 为 null 时返回 "null"
+     * @return 12 位十六进制短哈希；url 为 null 时返回 "null"
      */
     public static String urlCacheKey(String url) {
         if (url == null) {
@@ -278,8 +278,8 @@ public class KkFileUtils {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] digest = md.digest(url.getBytes(StandardCharsets.UTF_8));
-            StringBuilder sb = new StringBuilder(16);
-            for (int i = 0; i < 8 && i < digest.length; i++) {
+            StringBuilder sb = new StringBuilder(24);
+            for (int i = 0; i < 12 && i < digest.length; i++) {
                 sb.append(String.format("%02x", digest[i] & 0xff));
             }
             return sb.toString();
