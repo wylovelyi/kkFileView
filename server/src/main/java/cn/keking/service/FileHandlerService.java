@@ -287,7 +287,7 @@ public class FileHandlerService {
         originFilePath = fileDir + physicalName;
         String cacheListName = cacheFilePrefixName + "ListName";  //文件列表缓存文件名
         attribute.setType(type);
-        attribute.setName(originFileName);
+        attribute.setName(physicalName);
         attribute.setCacheName(cacheFileName);
         attribute.setCacheListName(cacheListName);
         attribute.setHtmlView(isHtmlView);
