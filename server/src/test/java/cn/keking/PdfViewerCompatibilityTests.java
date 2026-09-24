@@ -76,14 +76,22 @@ public class PdfViewerCompatibilityTests {
     }
 
     @Test
-    void shouldEscapeFileUrlWithJsStringInPreviewTemplates() throws IOException {
+    void shouldEscapeFileUrlWithJsStringInAllPreviewTemplates() throws IOException {
         // Regression test for #790: a single quote in the source file URL (e.g. a path
         // segment like "Int'l") was interpolated raw into the inline `var url = '...'`
         // assignment, terminating the JS string early and throwing Uncaught SyntaxError.
         // FreeMarker's ?js_string built-in escapes it for the JS string literal context.
-        String pdfTemplate = readResource("/web/pdf.ftl");
-        assertTrue(pdfTemplate.contains("var url = '${finalUrl?js_string}';"),
-                () -> "pdf.ftl must JS-escape the file URL to avoid SyntaxError on apostrophe (see #790)");
+        // Every preview template that injects the file URL into a JS string literal must
+        // use ?js_string, otherwise a URL containing an apostrophe breaks the page.
+        String[] previewTemplates = {
+                "bpmn", "csv", "dcm", "drawio", "eml", "epub", "msg", "ofd",
+                "officeweb", "online3D", "pdf", "svg", "tiff", "xmind"
+        };
+        for (String name : previewTemplates) {
+            String template = readResource("/web/" + name + ".ftl");
+            assertTrue(template.contains("var url = '${finalUrl?js_string}';"),
+                    () -> name + ".ftl must JS-escape the file URL to avoid SyntaxError on apostrophe (see #790)");
+        }
     }
 
     private String readResource(String resourcePath) throws IOException {
